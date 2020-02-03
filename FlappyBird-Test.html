@@ -9,7 +9,12 @@
    </head>
 
    <body onload="startGame()">
+     <p id="qwerty">
+
+     </p>
+
       <script>
+
          //var myGamePiece = new Image();
          //myGamePiece.src = "bird.png";
          var myObstacles = [];
@@ -19,7 +24,6 @@
          function startGame() {
             myGamePiece = new component(30, 30, "red", 10, 120);
             myGamePiece.gravity = 0.15;
-            //myScore = new component("30px", "30px", "black", 280, 40, "number");
             myGameArea.start();
          }
          var myGameArea = {
@@ -126,8 +130,13 @@
              if(numbObstaclePast>3){
                if (everyinterval(150)) {
                    myScore++;
+                   if(myScore>countNum){
+                      add1();
+                      document.getElementById('qwerty').innerHTML = "High score is " + countNum;
+                 }
                }
-             }
+
+       }
              for (i = 0; i < myObstacles.length; i += 1) {
                  myObstacles[i].x += -1;
                  myObstacles[i].update();
@@ -164,6 +173,18 @@
          	accelerate(0.25);
            }
          }
+         var countNum = JSON.parse(localStorage.getItem("HSTracker"));
+         function add1(){
+           if(countNum == null){
+             countNum=0;
+           }
+           else{
+             countNum++;
+           }
+           localStorage.setItem("HSTracker", countNum);
+         }
+         document.getElementById('qwerty').innerHTML = "High score is " + countNum;
+
       </script>
    </body>
 </html>
