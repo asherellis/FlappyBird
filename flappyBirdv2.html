@@ -3,24 +3,24 @@
    <head>
       <style>
          canvas {
-           border:1px solid black;
-           }
-           #qwerty{
-             font-family: Arial;
+         border:1px solid black;
+         background-image: url("flappyback.png");
+         background-size: 100%; height: 95%
          }
+         #qwerty{
+         font-family: Arial;
+         }
+
       </style>
    </head>
-
    <body onload="startGame()">
-     <p id="qwerty"> High score is
-     </p>
-
+      <p id="qwerty">
+      </p>
       <script>
          var myObstacles = [];
          var myScore = 0;
          var numbObstaclePast = 0;
          var running = true;
-
          function checkIfRunning(){
            if(running == false){
              window.location.reload(false);
@@ -28,7 +28,7 @@
          }
 
          function startGame() {
-            myGamePiece = new component(30, 25, "bird.png", 20, 120, "image");
+            myGamePiece = new component(30, 25, "flappybird.png", 20, 120, "image");
             myGamePiece.gravity = 0.15;
             myGameArea.start();
          }
@@ -65,13 +65,13 @@
              }
 
              this.update = function() {
-                 ctx = myGameArea.context;
-                 ctx.fillText("Score: " + myScore, 400, 20);
-                 ctx.font = "18px Arial";
-                //ctx.fillStyle = color;
-                 ctx.fillRect(this.x, this.y, this.width, this.height);
+               ctx = myGameArea.context;
                  if (type == "image") {
                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+                   //make background of bird transparent
+                   ctx.fillStyle = "rgba(255, 255, 255, 0)";
+                   ctx.globalCompositeOperation = 'source-over';
                  }
                  else {
                    ctx.fillStyle = color;
@@ -138,17 +138,21 @@
                  myObstacles.push(new component(15, x - height - gap, "bottomtube.png", x, height + gap, "image"));
                  numbObstaclePast+=1;
              }
-             if(numbObstaclePast>3){
+             if(numbObstaclePast<3){
+               document.getElementById('qwerty').innerHTML = "Current score is " + myScore + "<br><br>High score is " + highScore;
+             }
+             else if(numbObstaclePast>3){
                if (everyinterval(150)) {
                    myScore++;
-                   alert("v");
-                   if(myScore>countNum){
-                      add1();
-                      document.getElementById('qwerty').innerHTML = "High score is " + countNum;
+                   document.getElementById('qwerty').innerHTML = "Current score is " + myScore + "<br><br>High score is " + highScore;
+                   if(myScore>(highScore-1)){
+                     highScore=myScore;
+                     localStorage.setItem("hs", highScore);
+                     document.getElementById('qwerty').innerHTML = "Current score is " + myScore + "<br><br>High score is " + highScore;
                  }
                }
 
-       }
+         }
              for (i = 0; i < myObstacles.length; i += 1) {
                  myObstacles[i].x += -1;
                  myObstacles[i].update();
@@ -185,18 +189,10 @@
          	accelerate(0.25);
            }
          }
-         var countNum = JSON.parse(localStorage.getItem("HSTracker"));
-         function add1(){
-           if(countNum == null){
-             countNum=0;
-           }
-           else{
-             countNum++;
-           }
-           localStorage.setItem("HSTracker", countNum);
+         var highScore = JSON.parse(localStorage.getItem("hs"));
+         if(highScore==null){
+           highScore=0;
          }
-         document.getElementById('qwerty').innerHTML += countNum;
-
       </script>
    </body>
 </html>
