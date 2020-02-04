@@ -19,9 +19,16 @@
          var myObstacles = [];
          var myScore = 0;
          var numbObstaclePast = 0;
+         var running = true;
+
+         function checkIfRunning(){
+           if(running == false){
+             window.location.reload(false);
+           }
+         }
 
          function startGame() {
-            myGamePiece = new component(30, 25, "bird.png", 170, 120, "image");
+            myGamePiece = new component(30, 25, "bird.png", 20, 120, "image");
             myGamePiece.gravity = 0.15;
             myGameArea.start();
          }
@@ -34,6 +41,7 @@
                  document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                  this.frameNo = 0;
                  this.interval = setInterval(updateGameArea, 20);
+                 this.interval = setInterval(checkIfRunning, 20);
                  },
              clear : function() {
                  this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -84,13 +92,13 @@
              this.hitBottom = function() {
                  var rockbottom = myGameArea.canvas.height - this.height;
                  if (this.y > rockbottom) {
-                   window.location.reload(false);
+                   running = false;
                   }
              }
              this.hitTop = function() {
                var top = 0
                if(this.y < top){
-                 window.location.reload(false);
+                 running = false;
                }
              }
 
@@ -115,7 +123,7 @@
              var x, height, gap, minHeight, maxHeight, gap;
              for (i = 0; i < myObstacles.length; i += 1) {
                  if (myGamePiece.crashWith(myObstacles[i])) {
-                   window.location.reload(false);
+                   running = false;
                  }
              }
              myGameArea.clear();
@@ -130,9 +138,10 @@
                  myObstacles.push(new component(15, x - height - gap, "bottomtube.png", x, height + gap, "image"));
                  numbObstaclePast+=1;
              }
-             if(numbObstaclePast>2){
+             if(numbObstaclePast>3){
                if (everyinterval(150)) {
                    myScore++;
+                   alert("v");
                    if(myScore>countNum){
                       add1();
                       document.getElementById('qwerty').innerHTML = "High score is " + countNum;
