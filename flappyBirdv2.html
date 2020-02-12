@@ -8,21 +8,20 @@
          background-size: 100%; height: 95%
          }
          #qwerty{
-           font-family: Arial;
+         font-family: Arial;
          }
-
       </style>
    </head>
    <body onload="startGame()">
       <p id="qwerty">
       </p>
-
       <script>
-
          var myObstacles = [];
          var myScore = 0;
          var numbObstaclePast = 0;
          var running = true;
+         var timeOfLastJump = 0;
+         var wantsToJump=false;
          function checkIfRunning(){
            if(running == false){
              window.location.reload(false);
@@ -31,7 +30,7 @@
          }
 
          function startGame() {
-            myGamePiece = new component(30, 25, "flappybird.png", 20, 120, "image");
+            myGamePiece = new component(34, 24, "spritesheet.png", 170, 120, "sprite");
             myGamePiece.gravity = 0.15;
             myGameArea.start();
          }
@@ -50,6 +49,22 @@
                  this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
              }
          }
+
+         //     var x = 1;
+         //   var y = 45;
+         var speed = 2;
+         var canvas = document.getElementById("myCanvas");
+         var spritesheet = new Image();
+         spritesheet.src = "spritesheet.png";
+         var imageWidth = 34, imageHeight = 24;
+         var numbImages = 4;
+         var currImage = 0;
+
+
+         function clearBackground() {
+          ctx.fillRect( 0, 0, 480, 270);
+         }
+
 
          function component(width, height, color, x, y, type) {
              this.type = type;
@@ -70,26 +85,44 @@
                this.image = new Image();
                this.image.src = color;
              }
+
              ctx = myGameArea.context;
              this.update = function() {
 
+
+
+               ctx.fillStyle = "white";
+               ctx.fillText(myScore, 240, 80);
+               ctx.strokeText(myScore, 240, 80);
+               ctx.font = "28px Verdana";
+
                  if (type == "image") {
-                   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                  ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
                    //make background of bird transparent
                    ctx.fillStyle = "rgba(255, 255, 255, 0)";
                    ctx.globalCompositeOperation = 'source-over';
+                 }
+                 else if (type == "sprite"){
+                   ctx.drawImage( spritesheet, currImage*imageWidth-.5 , 0, imageWidth, imageHeight, this.x, this.y, imageWidth, imageHeight );
+                   if(everyinterval(5)){
+                     currImage+=1;
+                     currImage %= numbImages;
+                   }
+
                  }
                  else {
                    ctx.fillStyle = color;
                    ctx.fillRect(this.x, this.y, this.width, this.height);
                  }
                }
+
+
              this.newPos = function() {
                  this.gravitySpeed += this.gravity;
                  this.y += this.speedY + this.gravitySpeed;
                  this.hitBottom();
-                 if(numbObstaclePast>3){
+                 if(numbObstaclePast>2){
                    if (everyinterval(150)) {
                        this.hitTop();
                    }
@@ -141,27 +174,17 @@
                  height = Math.random()*(maxHeight-minHeight)+minHeight;
                  gap = 110;
 
-
-
-                 //myObstacles.push(new component(27, height, "pipe.png", x, 0, "image"));
-                 //myObstacles.push(new component(27, x - height - gap, "pipe.png", x, height + gap, "image"));
-
                  myObstacles.push(new component(27, height, "pipe.png", x, 0, "image"));
                  myObstacles.push(new component(27, x - height - gap, "pipe.png", x, height + gap, "image"));
 
                  numbObstaclePast+=1;
              }
 
-    //         ctx.font="30px MS";
-    //         ctx.fillStyle = "white";
-    //         ctx.textAlign = "center";
-    //         ctx.fillText(myScore, 240, 100);
-
-             if(numbObstaclePast<3){
+             if(numbObstaclePast<2){
                document.getElementById('qwerty').innerHTML = "Current score: " + myScore + "<br><br>High score: " + highScore;
                document.getElementById('qwerty').innerHTML = "Current score: " + myScore + "<br><br>High score: " + highScore;
              }
-             else if(numbObstaclePast>3){
+             else if(numbObstaclePast>2){
                if (everyinterval(150)) {
                    myScore++;
                    scoreSound.play();
@@ -194,7 +217,7 @@
              myGamePiece.gravity = n;
          }
          function changeSpeed(n) {
-             myGamePiece.speedY+=n;
+             myGamePiece.speedY-=n;
          }
 
          document.addEventListener("keydown", handleKeyDown, true);
@@ -202,8 +225,13 @@
 
          function handleKeyDown(event) {
          if(event.key == ' ') {
-         	changeSpeed(-7);
-          flySound.play();
+           var now = new Date().getTime();
+
+           if(now-timeOfLastJump > 200){
+             changeSpeed(7);
+             timeOfLastJump=now;
+             flySound.play();
+          }
            }
          }
 
