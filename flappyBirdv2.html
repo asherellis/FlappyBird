@@ -15,6 +15,7 @@
    <body onload="startGame()">
       <p id="qwerty">
       </p>
+      <p id = "scoreTracker2"> </p>
       <script>
          var myObstacles = [];
          var myScore = 0;
@@ -22,18 +23,67 @@
          var running = true;
          var timeOfLastJump = 0;
          var wantsToJump=false;
+         var updateVersion;
+
+         function doMouseDown(event){
+           page_x = event.pageX;
+           page_y = event.pageY;
+
+           if(page_x>173 & page_x<247 & page_y > 151 & page_y<175){
+             window.location.reload(false);
+          }
+          else if(page_x>254 & page_x<324 & page_y > 151 & page_y<175){
+            var url = "https://twitter.com/intent/tweet/?text=Just%20scored%20" + myScore + "%20points!";
+            window.open(url);
+          }
+          else if(page_x>175 & page_x<327 & page_y > 183 & page_y<201){
+            window.location.reload(false);
+            //WHEN YOU CLICK ADD TO LEADERBOARD BUTTON!!!
+          }
+
+         }
+
          function checkIfRunning(){
            if(running == false){
-             window.location.reload(false);
-             //this controls what happens when you die!
+             ctx.font = "14px Verdana";
+             ctx.fillStyle="rgb(255, 204, 102)";
+             ctx.fillRect(195,20,80,100);
+             ctx.strokeRect(195,20,80,100);
+             ctx.fillStyle = "white";
+             ctx.fillText(myScore, 230, 70);
+             ctx.strokeText(myScore, 230, 70);
+             ctx.fillText(highScore, 225, 110);
+             ctx.strokeText(highScore, 225, 110);
+             ctx.fillStyle = "red";
+             ctx.fillText("SCORE", 210, 50);
+             ctx.fillText("BEST", 216, 90);
+             ctx.fillStyle = "red";
+             ctx.fillRect(165,140,70,20);
+             ctx.strokeRect(165,140,70,20);
+             ctx.fillRect(245,140,70,20);
+             ctx.strokeRect(245,140,70,20);
+             ctx.fillStyle = "white";
+             ctx.fillText("RESTART", 167, 155);
+             ctx.fillText("SHARE", 255, 155);
+             ctx.fillStyle = "red";
+             ctx.fillRect(165,170,150,20);
+             ctx.strokeRect(165,170,150,20);
+             ctx.fillStyle = "white";
+             ctx.font = "12px Verdana";
+             ctx.fillText("ADD TO LEADERBOARD", 168, 185);
+             myGamePiece = new component(34, 24, "flappy2.png", 170, 246, "image");
+             var updateVersion = 0;
+             myGamePiece.update();
+
            }
          }
 
-         function startGame() {
+         if(running == true){
+          function startGame() {
             myGamePiece = new component(34, 24, "spritesheet.png", 170, 120, "sprite");
             myGamePiece.gravity = 0.15;
             myGameArea.start();
-         }
+          }
          var myGameArea = {
              canvas : document.createElement("canvas"),
              start : function() {
@@ -50,8 +100,6 @@
              }
          }
 
-         //     var x = 1;
-         //   var y = 45;
          var speed = 2;
          var canvas = document.getElementById("myCanvas");
          var spritesheet = new Image();
@@ -59,7 +107,6 @@
          var imageWidth = 34, imageHeight = 24;
          var numbImages = 4;
          var currImage = 0;
-
 
          function clearBackground() {
           ctx.fillRect( 0, 0, 480, 270);
@@ -88,18 +135,15 @@
 
              ctx = myGameArea.context;
              this.update = function() {
-
-
-
+               if (updateVersion == 1){
                ctx.fillStyle = "white";
                ctx.fillText(myScore, 240, 80);
                ctx.strokeText(myScore, 240, 80);
                ctx.font = "28px Verdana";
-
+         }
                  if (type == "image") {
                   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-                   //make background of bird transparent
                    ctx.fillStyle = "rgba(255, 255, 255, 0)";
                    ctx.globalCompositeOperation = 'source-over';
                  }
@@ -179,7 +223,7 @@
 
                  numbObstaclePast+=1;
              }
-
+         if(running==true){
              if(numbObstaclePast<2){
                document.getElementById('qwerty').innerHTML = "Current score: " + myScore + "<br><br>High score: " + highScore;
                document.getElementById('qwerty').innerHTML = "Current score: " + myScore + "<br><br>High score: " + highScore;
@@ -192,20 +236,22 @@
 
                    if(myScore>(highScore-1)){
                      highScore=myScore;
-                     localStorage.setItem("hs", highScore);
+                     localStorage.setItem("highScoreRecord", highScore);
                      document.getElementById('qwerty').innerHTML = "Current score: " + myScore + "<br><br>High score: " + highScore;
                  }
                }
 
          }
+
              for (i = 0; i < myObstacles.length; i += 1) {
                  myObstacles[i].x += -1;
                  myObstacles[i].update();
              }
+             var updateVersion = 1;
              myGamePiece.newPos();
              myGamePiece.update();
          }
-
+         }
          function everyinterval(n) {
              if ((myGameArea.frameNo / n) % 1 == 0) {
                return true;
@@ -222,6 +268,7 @@
 
          document.addEventListener("keydown", handleKeyDown, true);
          document.addEventListener("keyup", handleKeyUp, true);
+         document.addEventListener("mousedown", doMouseDown, true);
 
          function handleKeyDown(event) {
          if(event.key == ' ') {
@@ -240,9 +287,10 @@
          	accelerate(0.25);
            }
          }
-         var highScore = JSON.parse(localStorage.getItem("hs"));
+         var highScore = JSON.parse(localStorage.getItem("highScoreRecord"));
          if(highScore==null){
            highScore=0;
+         }
          }
       </script>
    </body>
