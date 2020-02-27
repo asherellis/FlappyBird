@@ -1,16 +1,21 @@
-
 <!DOCTYPE html>
 <html>
    <head>
       <style>
-
+         /*
+    -     make bird hover before starting, only starts when you press a key or "start" button
+    -     instead of bird automatically going to the ground when you die, it falls down from last position
+    -     make obstacles stay on-screen after you die
+    -     Tilt or rotate bird while falling and rising
+         */
          body{
-           position: relative;
-           top: 150px;
-           transform: scale(1.5);
-           overflow: hidden;
+         position: relative;
+         top: 150px;
+         transform: scale(1.5);
+         overflow: hidden;
          }
          canvas {
+         position: relative;
          background-image: url("flappyback.png");
          display: block;
          margin-left: auto;
@@ -18,80 +23,71 @@
          background-size: 100%; height: 95;
          border:1px solid black;
          }
-
          #currentAndHighScores{
-           font-family: Arial;
-           color: white;
+         font-family: Arial;
+         color: white;
          }
          #leaderboard{
-           font-family: Arial;
-           color: white;
+         font-family: Arial;
+         color: white;
          }
-
       </style>
    </head>
-
    <body onload="startGame()">
-
-       <div id = "leaderboard"> </div>
-       <p id="currentAndHighScores"> </p>
-       <link rel="shortcut icon" href="flappy2.png" type="image/x-icon"/>
-       <title>Flappy Bird</title>
-
+      <div id = "leaderboard"> </div>
+      <p id="currentAndHighScores"> </p>
+      <link rel="shortcut icon" href="flappy2.png" type="image/x-icon"/>
+      <title>Flappy Bird</title>
       <script>
-
-/*flickering
-  rafter: gravity/physics
-  cleaning up code
-  game instructions?
-  make bird hover before starting
-  Tilt or rotate bird while falling and rising
-  Start: “tap” button, starts only when you tap
-  can some of the global vars be local?
-*/
-
+         var scaleFactor = 1.5;
          var myObstacles = [];
          var myScore = 0;
          var numbObstaclePast = 0;
          var running = true;
          var timeOfLastJump = 0;
-         var wantsToJump=false;
-         var updateVersion;
          var leaderboardState = false;
          var barPosX = 0;
+         //var xpos = this.x;
+        addEventListener("click", handleTheClick, true);
+        function handleTheClick(){
+          running = !running;
+        }
 
          function doMouseDown(event){
-    //      var successfulClick = true;
+
            page_x = event.pageX;
            page_y = event.pageY;
 
+           var rect = event.target.getBoundingClientRect();
+           page_x = page_x-rect.left;
+           page_y = page_y-rect.top;
+           console.log(page_x + "," + page_y);
+         if(running == false){
 
-//add note that if buttons don't work, change browser to 100% zoom
 
-if(running == false){
-           if(page_x>526 & page_x<635 & page_y > 245 & page_y<280){
+           if(page_x>165*scaleFactor & page_x<235*scaleFactor & page_y > 140*scaleFactor & page_y<160*scaleFactor){
              window.location.reload(false);
           }
-          else if(page_x>644 & page_x<755 & page_y > 245 & page_y<280){
+          else if(page_x>245*scaleFactor & page_x<315*scaleFactor & page_y > 140*scaleFactor & page_y<160*scaleFactor){
             var url = "https://twitter.com/intent/tweet/?text=Just%20scored%20" + myScore + "%20points!";
             window.open(url);
           }
-          else if(page_x>526 & page_x<755 & page_y > 292 & page_y<323){
+          else if(page_x>165*scaleFactor & page_x<315*scaleFactor & page_y > 170*scaleFactor & page_y<190*scaleFactor){
             //document.getElementById('leaderboard').style.color = "black";
             leaderboardState=true;
             document.addEventListener("mousedown", doMouseDownV2, true);
 
           }
           else{
-  if(leaderboardState == false){
-    alert("If the buttons aren't working properly, set browser zoom to 100% by pressing Ctrl+0 (Command+0 on the Mac).");
+         if(leaderboardState == false){
+         alert("If the buttons aren't working properly, set browser zoom to 100% by pressing Ctrl+0 (Command+0 on the Mac).");
             }
-}
-}
+         }
+         }
          }
 
          function doMouseDownV2(event){
-//           var successfulClick = true;
+         //           var successfulClick = true;
 
            page_x = event.pageX;
            page_y = event.pageY;
@@ -106,7 +102,7 @@ if(running == false){
                alert("If the buttons aren't working properly, set browser zoom to 100% by pressing Ctrl+0 (Command+0 on the Mac).");
            }
            }
-        }
+         }
 
          function checkIfRunning(){
 
@@ -149,13 +145,12 @@ if(running == false){
              ctx.font = "12px Verdana";
              ctx.fillText("ADD TO LEADERBOARD", 168, 185);
              myGamePiece = new component(34, 24, "flappy2.png", 170, 246, "image");
-             var updateVersion = 0;
+         //     var updateVersion = 0;
              myGamePiece.update();
 
                if(this.leaderboardState == true){
                  myGameArea.clear();
                  ctx.drawImage(bottomBar2, barPosX, 270);
-
 
                  ctx.fillStyle="rgb(223, 215, 152)";
                  ctx.fillRect(133.7,44,205,143);
@@ -206,9 +201,9 @@ if(running == false){
                  this.context = this.canvas.getContext("2d");
                  document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                  this.frameNo = 0;
-                 this.interval = setInterval(updateGameArea, 20);
-                 this.interval = setInterval(checkIfRunning, 20);
-//                 this.interval = setInterval(checkLeaderboardState, 20);
+                 // this.interval = setInterval(updateGameArea, 20);
+                 // this.interval = setInterval(checkIfRunning, 20);
+                 this.interval = setInterval(doStuff, 20);
                  },
              clear : function() {
                  this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -225,6 +220,13 @@ if(running == false){
 
          var bottomBar2 = new Image();
          bottomBar2.src = "bottomBar.png";
+
+
+         function doStuff(){
+         updateGameArea();
+         checkIfRunning();
+
+         }
 
          function clearBackground() {
           ctx.fillRect( 0, 0, 480, 310);
@@ -255,18 +257,11 @@ if(running == false){
 
              ctx = myGameArea.context;
              this.update = function() {
-               //ctx.drawImage(bottomBar, barPosX, 270);
                ctx.drawImage(bottomBar2, barPosX, 270);
 
-               if (updateVersion == 1){
-               ctx.fillStyle = "white";
-               ctx.fillText(myScore, 240, 80);
-               ctx.strokeText(myScore, 240, 80);
-               ctx.font = "28px Verdana";
-
-         }
                  if (type == "image") {
                   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+         //          xpos = this.x;
 
                    ctx.fillStyle = "rgba(255, 255, 255, 0)";
                    ctx.globalCompositeOperation = 'source-over';
@@ -288,8 +283,16 @@ if(running == false){
 
              this.newPos = function() {
 
-                 this.gravitySpeed += this.gravity;
-                 this.y += this.speedY + this.gravitySpeed;
+                 this.speedY += this.gravity;
+                 if(this.speedY > 5){
+                   this.speedY = 5;
+                 }
+                 if(this.speedY < -6){
+                   this.speedY = -6;
+                 }
+
+                 this.y += this.speedY + this.gravity;
+
                  this.hitBottom();
                  if(numbObstaclePast>2){
                    if (everyinterval(150)) {
@@ -300,6 +303,7 @@ if(running == false){
              this.hitBottom = function() {
                  var rockbottom = 243;
                  if (this.y > rockbottom) {
+
                    running = false;
                   }
              }
@@ -338,13 +342,12 @@ if(running == false){
              myGameArea.frameNo += 1;
              if (myGameArea.frameNo == 1 || everyinterval(150)) {
                  x = myGameArea.canvas.width;
-                 minHeight = 20;
-                 maxHeight = 180;
-                 height = Math.random()*(maxHeight-minHeight)+minHeight;
-                 gap = 110;
 
-                 myObstacles.push(new component(27, height, "pipe.png", x, 0, "image"));
-                 myObstacles.push(new component(27, x - height - gap, "pipe.png", x, height + gap, "image"));
+            shiftTerm = 140*Math.random()-70;
+
+
+                 myObstacles.push(new component(34.6666667, 293.3333333, "topPipe.png", x, -203+shiftTerm, "image"));
+                 myObstacles.push(new component(34.6666667, 293.3333333, "bottomPipe.png", x, 184+shiftTerm, "image"));
 
                  numbObstaclePast+=1;
              }
@@ -353,7 +356,7 @@ if(running == false){
            document.getElementById('leaderboard').innerHTML = "<strong>LEADERBOARD:</strong><br>1) " + this.highScore + "<br>2) " + this.highScore2 + "<br>3) " + highScore3 + "<br>4) " + highScore4 + "<br>5) " + highScore5;
 
            barPosX--;
-           if(barPosX<-100){
+           if(barPosX<-500){
              barPosX=0;
            }
 
@@ -399,7 +402,7 @@ if(running == false){
                  myObstacles[i].x += -1;
                  myObstacles[i].update();
              }
-             var updateVersion = 1;
+
              myGamePiece.newPos();
              myGamePiece.update();
          }
@@ -428,6 +431,7 @@ if(running == false){
 
            if(now-timeOfLastJump > 200){
              changeSpeed(7);
+             accelerate(0.25);
              timeOfLastJump=now;
              if(running==true){
 
@@ -468,5 +472,4 @@ if(running == false){
          }
       </script>
    </body>
-
 </html>
