@@ -48,10 +48,10 @@
          var leaderboardState = false;
          var barPosX = 0;
          //var xpos = this.x;
-        addEventListener("click", handleTheClick, true);
+      /*  addEventListener("click", handleTheClick, true);
         function handleTheClick(){
           running = !running;
-        }
+        }*/
 
          function doMouseDown(event){
 
@@ -91,8 +91,11 @@
 
            page_x = event.pageX;
            page_y = event.pageY;
+           var rect = event.target.getBoundingClientRect();
+           page_x = page_x-rect.left;
+           page_y = page_y-rect.top;
 
-           if(page_x>325*scaleFactor & page_x<477*scaleFactor& page_y >225*scaleFactor & page_y<245*scaleFactor){
+           if(page_x>163*scaleFactor & page_x<318*scaleFactor& page_y >200*scaleFactor & page_y<220*scaleFactor){
 
              window.location.reload(false);
           //   successfulClick = true;
