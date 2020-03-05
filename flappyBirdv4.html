@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html>
    <head>
       <style>
          /*
-    -     make bird hover before starting, only starts when you press a key or "start" button
-    -     instead of bird automatically going to the ground when you die, it falls down from last position
-    -     make obstacles stay on-screen after you die
-    -     Tilt or rotate bird while falling and rising
+         -     make bird hover before starting, only starts when you press a key or "start" button
+         -     instead of bird automatically going to the ground when you die, it falls down from last position
+         -     make obstacles stay on-screen after you die
+         -     Tilt or rotate bird while falling and rising
          */
          body{
          position: relative;
@@ -57,7 +56,7 @@
            var rect = event.target.getBoundingClientRect();
            page_x = page_x-rect.left;
            page_y = page_y-rect.top;
-        //   console.log(page_x + "," + page_y);
+         //   console.log(page_x + "," + page_y);
 
            if(running == false){
              if(page_x>165*scaleFactor & page_x<235*scaleFactor & page_y > 140*scaleFactor & page_y<160*scaleFactor){
@@ -199,6 +198,8 @@
          var flappy2 = new Image();
          flappy2.src = "flappy2.png";
 
+
+
          var bottomBar2 = new Image();
          bottomBar2.src = "bottomBar.png";
 
@@ -244,7 +245,10 @@
              else if (type == "sprite"){
                //ctx.save();
                if(spaceBarPressed==false){
-            ctx.drawImage(flappy2, 170, 120, imageWidth, imageHeight);
+            //ctx.drawImage(flappy2, 170, 120, imageWidth, imageHeight);
+            ctx.drawImage( spritesheet, (currImage+1)*imageWidth-.5 , 0, imageWidth, imageHeight, this.x, this.y, imageWidth, imageHeight );
+
+
                }
                else{
 
